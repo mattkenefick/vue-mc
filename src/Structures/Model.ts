@@ -1,7 +1,4 @@
-import Vue              from 'vue'import Base, { HttpMethods, RequestOperation } from './Base'
-import Collection                              from './Collection'
-import ResponseError                           from '../Errors/ResponseError'
-import ValidationError                         from '../Errors/ValidationError'
+import Vue                                     from 'vue'
 import {
     castArray,
     cloneDeep,
@@ -31,7 +28,12 @@ import {
     once,
     pick,
     values,
-}                                  from 'lodash'
+}                                              from 'lodash'
+
+import Base, { HttpMethods, RequestOperation } from './Base'
+import Collection                              from './Collection'
+import ResponseError                           from '../Errors/ResponseError'
+import ValidationError                         from '../Errors/ValidationError'
 import Response                                from "../HTTP/Response";
 import {Rule}                                  from "../Validation";
 import ProxyResponse                           from '../HTTP/ProxyResponse';

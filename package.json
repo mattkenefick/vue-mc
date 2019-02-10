@@ -67,6 +67,7 @@
         "rollup-plugin-node-resolve": "^5.2.0",
         "rollup-plugin-typescript2": "^0.19.2",
         "source-map-support": "^0.5.9",
+        "ts-node": "^8.0.2",
         "typescript": "^3.3.3"
     },
     "scripts": {
@@ -77,20 +78,17 @@
         "prepublishOnly": "yarn test && yarn build"
     },
     "nyc": {
-        "require": [
-            "@babel/register"
+        "extension": [
+            ".ts"
         ],
-      "extension": [
-        ".ts"
-      ],
-      "include": [
-        "src/**/*.ts"
-      ],
-      "exclude": [
-        "src/**/*.js",
-        "src/**/*.d.ts"
-      ],
-      "reporter": [
+        "include": [
+            "src/**/*.ts"
+        ],
+        "exclude": [
+            "src/**/*.js",
+            "src/**/*.d.ts"
+        ],
+        "reporter": [
             "lcov",
             "text",
             "html"
