@@ -1,7 +1,7 @@
 import moxios from 'moxios'
 import {assert, expect} from 'chai'
-import {Model, Collection} from '../../src/index.js'
-import ValidationError  from '../../src/Errors/ValidationError.js'
+import {Model, Collection} from '../../src/index'
+import ValidationError  from '../../src/Errors/ValidationError'
 import * as _ from 'lodash';
 import * as util from 'util';
 import {
@@ -13,7 +13,7 @@ import {
     numeric,
     required,
     string,
-} from '../../src/Validation/index.js'
+} from '../../src/Validation/index'
 
 /**
  * @type {number} How long moxios has to wait before handling a request.
@@ -32,7 +32,7 @@ function expectRequestToBeSkipped(request, done) {
 }
 
 /**
- * Unit tests for Model.js
+ * Unit tests for Model
  */
 describe('Model', () => {
 
