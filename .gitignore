@@ -10,3 +10,7 @@
 /validation
 /vue-mc.js
 /vue-mc.es.js
+.rpt2_cache/
+**/*.js
+**/*.js.map
+**/*.d.ts

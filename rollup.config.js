@@ -1,8 +1,10 @@
-import * as _ 	from 'lodash'
-import babel 	from 'rollup-plugin-babel'
-import resolve 	from 'rollup-plugin-node-resolve'
-import commonjs from 'rollup-plugin-commonjs'
-import pkg 	    from './package.json'
+import * as _     from 'lodash'
+import babel 	  from 'rollup-plugin-babel'
+import resolve    from 'rollup-plugin-node-resolve'
+import commonjs   from 'rollup-plugin-commonjs'
+import pkg 	      from './package.json'
+import typescript from 'typescript'
+import ts_plugin2 from 'rollup-plugin-typescript2'
 
 const BASE = {
 	external: [
@@ -13,6 +15,9 @@ const BASE = {
 	plugins: [
 		resolve(),
 		commonjs(),
+		ts_plugin2({
+			typescript,
+		}),
 		babel({
 			exclude: ['node_modules/**/*'],
 			babelrc: false,
@@ -23,7 +28,7 @@ const BASE = {
 }
 
 const MAIN = _.assign({}, BASE, {
-	input: 'src/index.js',
+	input: 'src/index.ts',
 	output: [
 		{ file: pkg.main,    format: 'cjs' },
 		{ file: pkg.module,  format: 'es' }
@@ -31,14 +36,14 @@ const MAIN = _.assign({}, BASE, {
 })
 
 const VALIDATION = _.assign({}, BASE, {
-	input: 'src/Validation/index.js',
+	input: 'src/Validation/index.ts',
 	output: [
 		{ file: 'validation/index.js', format: 'cjs' },
 	],
 })
 
 const LOCALES = _.assign({}, BASE, {
-	input: './src/Validation/locale.js',
+	input: './src/Validation/locale.ts',
 	output: [
 		{ file: 'validation/locale.js', format: 'cjs' },
 	],

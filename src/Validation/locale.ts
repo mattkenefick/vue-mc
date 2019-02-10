@@ -1,7 +1,7 @@
 /**
  * Afrikaans
  */
-export const af_za = {
+export const af_za: Bundle = {
     locale: 'af-ZA',
     messages: {
         after: "Moet na ${date} wees",
@@ -50,60 +50,9 @@ export const af_za = {
 }
 
 /**
- * Arabic - Republic of Iraq
- */
-export const ar_iq = {
-    locale: 'ar-IQ',
-    messages: {
-        after: 'یجب ان یکون بعد ${date}',
-        alpha: 'يمكن فقط استخدام الحروف',
-        alphanumeric: 'يجب أن تكون أبجدية رقمية',
-        array: 'يجب أن يكون مجموعة',
-        ascii: 'يجب أن يكون ASCII',
-        base64: 'يجب أن تكون صالحة Base64',
-        before: 'يجب أن يكون قبل ${date}',
-        between: 'يجب أن يتراوح بين ${min} و ${max}',
-        between_inclusive: 'يجب أن يكون بين $ {min} و $ {max} ، او یشملهما',
-        boolean: 'يجب أن تكون صحيحة أو خاطئة',
-        creditcard: 'يجب أن يكون کرقم بطاقة ائتمان صحیحه',
-        date: 'یجب ان یکون تاریخ صحیحه',
-        dateformat: 'یجب ان یکون بشکل "${format}"',
-        defined: 'مطلوب',
-        email: 'يجب أن يكون عنوان بريد إلكتروني صحیحه',
-        empty: 'يجب أن تكون فارغة',
-        equals: 'یجب ان تکون مساویا لـ ${other}',
-        gt: 'يجب أن يكون أكبر من ${min}',
-        gte: 'يجب أن يكون أكبر من أو يساوي ${min}',
-        integer: 'يجب أن يكون عددا صحيحا',
-        ip: 'يجب أن يكون عنوان IP صالحًا',
-        isblank: 'قد لا تكون فارغة',
-        isnil: 'مطلوب',
-        isnull: 'مطلوب',
-        iso8601: 'يجب أن يكون تاريخ ISO8601 صالحًا',
-        json: 'يجب أن يكون JSON صالح',
-        length: 'يجب أن يكون طوله ${min} على الأقل',
-        length_between: 'يجب أن يكون الطول بين ${min} و ${max}',
-        lt: 'يجب أن يكون أقل من ${max}',
-        lte: 'يجب أن يكون أقل من أو يساوي ${max}',
-        match: 'يجب أن يطابق "$ {pattern}"',
-        negative: 'يجب أن يكون رقمًا سالبًا',
-        not: 'لا يمكن أن يكون $ {value}',
-        number: 'يجب أن يكون رقما',
-        numeric: 'يجب أن تكون رقمية',
-        object: 'يجب أن يكون كائن',
-        positive: 'يجب أن يكون رقما موجبا',
-        required: 'مطلوب',
-        same: 'يجب أن يكون له نفس القيمة مثل "$ {other}"',
-        string: 'يجب أن يكون سلسلة',
-        url: 'يجب أن يكون عنوان URL صالحًا',
-        uuid: 'يجب أن يكون UUID صالح',
-    },
-}
-
-/**
  * English - United States (Default)
  */
-export const en_us = {
+export const en_us: Bundle = {
     locale: 'en-US',
     messages: {
         after: 'Must be after ${date}',
@@ -152,59 +101,9 @@ export const en_us = {
 }
 
 /**
- * Persian - Islamic Republic of Iran
- */
-export const fa_ir = {
-    locale: 'fa-IR',
-    messages: {
-        after: 'باید بعد از ${date} باشد.',
-        alpha: 'فقط می تواند ترکیبی از حروف باشد',
-        alphanumeric: 'باید ترکیبی از اعداد و حروف باشد',
-        array: 'باید یک آرایه باشد',
-        ascii: 'باید کد اسکی (ASCII) باشد.',
-        base64: 'باید یک مقدار صحیح از  Base64 باشد',
-        before: 'باید قبل از ${date} باشد.',
-        between: 'باید بین ${min} و ${max} باشد',
-        between_inclusive: 'باید بزرگتر مساوی از${min} و کوچکتر مساوی از ${max} باشد',
-        boolean: 'باید یک مقدار صحیح یا غلط باشد',
-        creditcard: 'باید یک شماره کارت اعتباری معتبر باشد',
-        date: 'باید یک تاریخ صحیح باشد',
-        dateformat: 'باید به فرمت "${format}" باشد',
-        defined: 'اجباری است',
-        email: 'باید یک آدرس ایمیل معتبر باشد',
-        empty: 'باید خالی (تهی) باشد',
-        equals: 'باید برابر با ${other} باشد',
-        gt: 'باید بزرگتر از ${min} باشد',
-        gte: 'باید بزرگتر مساوی ${min} باشد',
-        integer: 'باید یک عدد صحیح باشد',
-        ip: 'باید یک آدرس IP معتبر باشد',
-        isblank: 'نباید خالی باشد',
-        isnil: 'اجباری است',
-        isnull: 'اجباری است',
-        iso8601: 'باید یک تاریخ معتبر ISO8601 باشد',
-        json: 'باید یک JSON معتبرباشد',
-        length: 'باید طولی به اندازه حداقل ${min} داشته باشد',
-        length_between: 'باید طولی بین ${min} تا ${max} داشته باشد',
-        lt: 'باید کوچکتر از ${max} باشد',
-        lte: 'باید کوچکتر مساوی از ${max} باشد',
-        match: 'باید شامل الگوی "${pattern}" باشد',
-        negative: 'باید یک عدد منفی باشد',
-        not: 'نباید برابر با ${value} باشد',
-        number: 'باید یک عدد باشد',
-        numeric: 'باید عددی باشد',
-        object: 'باید یک شیء باشد',
-        positive: 'باید یک عدد مثبت باشد',
-        required: 'اجباری است',
-        same: 'باید مقداری یکسان با "${other}" داشته باشد',
-        string: 'باید رشته باشد',
-        url: 'باید یک آدرس URL معتبر باشد',
-        uuid: 'باید یک UUID معتبر باشد',
-    },
-}
-/**
  * Portuguese - Brazil
  */
-export const pt_br = {
+export const pt_br: Bundle = {
     locale: 'pt-BR',
     messages: {
         after: 'Deve ser uma data depois de ${date}',
@@ -253,9 +152,9 @@ export const pt_br = {
 }
 
 /**
- * Dutch - The Netherlands
+ * Dutch - The Netherlands (Default)
  */
-export const nl_nl = {
+export const nl_nl: Bundle = {
     locale: 'nl-NL',
     messages: {
         after: 'Moet na ${date} zijn',
@@ -304,60 +203,9 @@ export const nl_nl = {
 }
 
 /**
- * Polish - Poland
- */
-export const pl_pl = {
-    locale: 'pl-PL',
-    messages: {
-        after: 'Musi być datą późniejszą od ${date}',
-        alpha: 'Musi zawierać jedynie litery',
-        alphanumeric: 'Musi zawierać jedynie litery i cyfry',
-        array: 'Musi być tablicą',
-        ascii: 'Musi zawierać tylko znaki ASCII',
-        base64: 'Musi być kodowane w Base64',
-        before: 'Musi być datą wcześniejszą od ${date}',
-        between: 'Musi być pomiędzy ${min}, a ${max}',
-        between_inclusive: 'Musi być pomiędzy ${min}, a ${max} włącznie',
-        boolean: 'Musi mieć wartość prawda albo fałsz',
-        creditcard: 'Musi być poprawnym numerem karty kredytowej',
-        date: 'Musi być poprawną datą',
-        dateformat: 'Data musi być w formacie "${format}"',
-        defined: 'Pole wymagane',
-        email: 'Musi być poprawnym adresem e-mail',
-        empty: 'Musi być puste',
-        equals: 'Musi wynosić ${other}',
-        gt: 'Musi być większe od ${min}',
-        gte: 'Musi być większe lub równe od ${min}',
-        integer: 'Musi być liczbą całkowitą',
-        ip: 'Musi być poprawnym adresem IP',
-        isblank: 'Nie może być puste',
-        isnil: 'Pole wymagane',
-        isnull: 'Pole wymagane',
-        iso8601: 'Musi być datą w formacie ISO8601',
-        json: 'Musi być poprawnym ciągiem znaków JSON',
-        length: 'Musi mieć długość co najmniej ${min} znaków',
-        length_between: 'Musi mieć długość pomiędzy ${min}, a ${max} znaków',
-        lt: 'Musi być mniejsze od ${max}',
-        lte: 'Musi być mniejsze lub równe od ${max}',
-        match: 'Musi być zgodne z "${pattern}"',
-        negative: 'Musi być liczbą ujemną',
-        not: 'Nie może być ${value}',
-        number: 'Musi być numerem',
-        numeric: 'Musi być liczbą',
-        object: 'Musi być obiektem',
-        positive: 'Musi być liczbą dodatnią',
-        required: 'Pole wymagane',
-        same: 'Musi mieć taką samą wartość jak pole "${other}"',
-        string: 'Musi być ciągiem znaków',
-        url: 'Musi być poprawnym adresem URL',
-        uuid: 'Musi być poprawnym identyfikatorem UUID',
-    },
-}
-
-/**
  * Russian - Russia
  */
-export const ru_ru = {
+export const ru_ru: Bundle = {
     locale: 'ru-RU',
     messages: {
         after: 'Должен быть после ${date}',
@@ -408,7 +256,7 @@ export const ru_ru = {
 /**
  * Danish - Denmark
  */
-export const da_dk = {
+export const da_dk: Bundle = {
     locale: 'da-DK',
     messages: {
         after: 'Skal være efter ${date}',
@@ -456,104 +304,53 @@ export const da_dk = {
     },
 }
 
-/**
- * Indonesian - Indonesia
- */
-export const id_id = {
-    locale: 'id-ID',
-    messages: {
-        after: 'Harus sesudah ${date}',
-        alpha: 'Hanya dapat menggunakan huruf',
-        alphanumeric: 'Harus berupa alfanumerik',
-        array: 'Harus berupa larik',
-        ascii: 'Harus berupa ASCII',
-        base64: 'Harus berupa Base64 valid',
-        before: 'Harus sebelum ${date}',
-        between: 'Harus di antara ${min} dan ${max}',
-        between_inclusive: 'Harus di antara ${min} dan ${max}, inklusif',
-        boolean: 'Harus berupa benar atau salah',
-        creditcard: 'Harus berupa nomor kartu kredit valid',
-        date: 'Harus berupa tanggal valid',
-        dateformat: 'Harus menggunakan format "${format}"',
-        defined: 'Wajib',
-        email: 'Harus berupa alamat email valid',
-        empty: 'Harus kosong',
-        equals: 'Harus sama dengan ${other}',
-        gt: 'Harus lebih dari ${min}',
-        gte: 'Harus lebih dari atau sama dengan ${min}',
-        integer: 'Harus berupa bilangan bulat',
-        ip: 'Harus berupa alamat IP valid',
-        isblank: 'Tidak boleh kosong',
-        isnil: 'Wajib',
-        isnull: 'Wajib',
-        iso8601: 'Harus berupa tanggal ISO8601',
-        json: 'Harus berupa JSON valid',
-        length: 'Memiliki panjang paling tidak ${min}',
-        length_between: 'Memiliki panjang di antara ${min} dan ${max}',
-        lt: 'Harus kurang dari ${max}',
-        lte: 'Harus kurang dari atau sama dengan ${max}',
-        match: 'Harus sama "${pattern}"',
-        negative: 'Harus berupa angka negatif',
-        not: 'Tidak boleh ${value}',
-        number: 'Harus berupa angka',
-        numeric: 'Harus berupa numerik',
-        object: 'Harus berupa objek',
-        positive: 'Harus berupa angka positif',
-        required: 'Wajib',
-        same: 'Harus memiliki nilai yang sama dengan "${other}"',
-        string: 'Harus berupa string',
-        url: 'Harus berupa URL valid',
-        uuid: 'Harus berupa UUID valid',
-    },
+export interface Bundle {
+    locale: string;
+    messages: Messages;
 }
 
-/**
- * German - Germany
- */
-export const de_de = {
-    locale: 'de-DE',
-    messages: {
-        after: 'Muss später sein als ${date}',
-        alpha: 'Kann nur Buchstaben enthalten',
-        alphanumeric: 'Muss alphanumerisch sein',
-        array: 'Muss ein Array sein',
-        ascii: 'Muss in ASCII sein',
-        base64: 'Muss valides Base64 sein',
-        before: 'Muss früher sein als ${date}',
-        between: 'Muss zwischen ${min} und ${max} sein',
-        between_inclusive: 'Muss zwischen einschließlich ${min} und ${max} sein',
-        boolean: 'Muss true oder false sein',
-        creditcard: 'Muss eine valide Kreditkartennummer sein',
-        date: 'Muss ein valides Datum sein',
-        dateformat: 'Muss im Datumsformat "${format}" sein',
-        defined: 'Erforderlich',
-        email: 'Muss eine gültige e-Mail Adresse sein',
-        empty: 'Muss leer sein',
-        equals: 'Muss gleich sein mit ${other}',
-        gt: 'Muss größer als ${min} sein',
-        gte: 'Muss größer als oder gleich sein wie ${min}',
-        integer: 'Muss eine Ganzzahl sein',
-        ip: 'Muss eine gültige IP Adresse sein',
-        isblank: 'Darf nicht leer sein',
-        isnil: 'Erforderlich',
-        isnull: 'Erforderlich',
-        iso8601: 'Muss ein valides ISO8601 Datum sein',
-        json: 'Muss valides JSON sein',
-        length: 'Muss mindestens die Länge ${min} haben',
-        length_between: 'Muss eine Länge zwischen ${min} und ${max} haben',
-        lt: 'Muss weniger sein als ${max}',
-        lte: 'Muss weniger sein als oder gleich ${max} sein',
-        match: 'Muss dem pattern "${pattern}" entsprechen',
-        negative: 'Muss eine negative Zahl sein',
-        not: 'Darf nicht ${value} sein',
-        number: 'Muss eine Zahl sein',
-        numeric: 'Muss numerisch sein',
-        object: 'Muss ein Objekt sein',
-        positive: 'Muss eine positive Zahl sein',
-        required: 'Erforderlich',
-        same: 'Muss gleich "${other}" sein',
-        string: 'Muss eine String sein',
-        url: 'Muss eine valide URL sein',
-        uuid: 'Muss eine valide UUID sein',
-    },
+export interface Messages {
+    [key: string]: string;
+    after: string;
+    alpha: string;
+    alphanumeric: string;
+    array: string;
+    ascii: string;
+    base64: string;
+    before: string;
+    between: string;
+    between_inclusive: string;
+    boolean: string;
+    creditcard: string;
+    date: string;
+    dateformat: string;
+    defined: string;
+    email: string;
+    empty: string;
+    equals: string;
+    gt: string;
+    gte: string;
+    integer: string;
+    ip: string;
+    isblank: string;
+    isnil: string;
+    isnull: string;
+    iso8601: string;
+    json: string;
+    length: string;
+    length_between: string;
+    lt: string;
+    lte: string;
+    match: string;
+    negative: string;
+    not: string;
+    number: string;
+    numeric: string;
+    object: string;
+    positive: string;
+    required: string;
+    same: string;
+    string: string;
+    url: string;
+    uuid: string;
 }

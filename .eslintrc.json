@@ -8,6 +8,9 @@
             "experimentalObjectRestSpread": true
         }
     },
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint"],
+    "extends": ["plugin:@typescript-eslint/recommended"],
     "rules": {
         "comma-dangle": ["error", {
             "arrays": "always-multiline",
@@ -52,6 +55,9 @@
         "arrow-spacing": ["warn",{"before":true,"after":true}],
         "constructor-super": "warn",
         "no-const-assign": "warn",
-        "no-var": "error"
+        "no-var": "error",
+        "@typescript-eslint/explicit-member-accessibility": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-non-null-assertion": "off"
     }
 }
