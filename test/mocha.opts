@@ -2,5 +2,6 @@
 --slow 20
 --full-trace
 --reporter spec
---require ts-node/register
+--require @babel/register
 --require source-map-support/register
+./test

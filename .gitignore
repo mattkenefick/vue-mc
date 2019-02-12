@@ -12,3 +12,6 @@
 /vue-mc.js
 /vue-mc.es.js
 /dist
+/src/**/*.d.ts
+/src/**/*.js
+/src/**/*.js.map

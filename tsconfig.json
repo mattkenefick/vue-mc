@@ -2,20 +2,18 @@
   "compilerOptions": {
     "module": "es6",
     "target": "es6",
-    "inlineSourceMap": true,
+    "sourceMap": true,
     "strict": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "declaration": true,
-    "declarationDir": "./dist",
-    "outDir": "./dist",
-    "noEmit": true
+    "declarationDir": "./src",
+    "outDir": "./src"
   },
   "include": [
     "src/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "**/*.d.ts"
+    "node_modules"
   ]
 }

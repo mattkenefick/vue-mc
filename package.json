@@ -73,11 +73,14 @@
     "scripts": {
         "build": "rollup -c",
         "lint": "eslint ./src/**/*.ts",
-        "test": "nyc mocha ./test",
+        "test": "tsc && nyc mocha",
         "docs": "cd docs && jekyll serve",
         "prepublishOnly": "yarn test && yarn build"
     },
     "nyc": {
+        "require": [
+            "@babel/register"
+        ],
         "extension": [
             ".ts"
         ],
