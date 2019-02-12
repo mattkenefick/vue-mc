@@ -16,6 +16,7 @@ const BASE = {
         commonjs(),
         ts_plugin2({
             typescript,
+            useTsconfigDeclarationDir: true,
         }),
     ],
 };
