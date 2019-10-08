@@ -1,42 +1,41 @@
-import Vue                                     from 'vue'
-import {
-    castArray,
-    cloneDeep,
-    defaults,
-    defaultTo,
-    each,
-    filter,
-    first,
-    flow,
-    get,
-    has,
-    head,
-    invert,
-    isArray,
-    isEmpty,
-    isEqual,
-    isFunction,
-    isNil,
-    isObject,
-    isObjectLike,
-    isPlainObject,
-    isString,
-    isUndefined,
-    keys,
-    mapValues,
-    merge,
-    once,
-    pick,
-    values,
-}                                              from 'lodash'
+import Vue from 'vue';
+import castArray from 'lodash/castArray';
+import cloneDeep from 'lodash/cloneDeep';
+import defaults from 'lodash/defaults';
+import defaultTo from 'lodash/defaultTo';
+import each from 'lodash/each';
+import filter from 'lodash/filter';
+import first from 'lodash/first';
+import flow from 'lodash/flow';
+import get from 'lodash/get';
+import has from 'lodash/has';
+import head from 'lodash/head';
+import invert from 'lodash/invert';
+import isArray from 'lodash/isArray';
+import isEmpty from 'lodash/isEmpty';
+import isEqual from 'lodash/isEqual';
+import isFunction from 'lodash/isFunction';
+import isNil from 'lodash/isNil';
+import isObject from 'lodash/isObject';
+import isObjectLike from 'lodash/isObjectLike';
+import isPlainObject from 'lodash/isPlainObject';
+import isString from 'lodash/isString';
+import isUndefined from 'lodash/isUndefined';
+import keys from 'lodash/keys';
+import mapValues from 'lodash/mapValues';
+import merge from 'lodash/merge';
+import once from 'lodash/once';
+import pick from 'lodash/pick';
+import values from 'lodash/values';
 
-import Base, { HttpMethods, RequestOperation } from './Base'
-import Collection                              from './Collection'
-import ResponseError                           from '../Errors/ResponseError'
-import ValidationError                         from '../Errors/ValidationError'
-import Response                                from "../HTTP/Response";
-import {Rule}                                  from "../Validation";
-import ProxyResponse                           from '../HTTP/ProxyResponse';
+import Base, {HttpMethods, Options, RequestOperation} from './Base';
+import Collection from './Collection';
+import ResponseError from '../Errors/ResponseError';
+import ValidationError from '../Errors/ValidationError';
+import Response from "../HTTP/Response";
+import {Rule} from "../Validation";
+import ProxyResponse from '../HTTP/ProxyResponse';
+import {Method} from "axios";
 
 /**
  * Reserved keywords that can't be used for attribute or option names.
@@ -82,8 +81,8 @@ const copyFrom = function(source: Record<string, any>, target: Record<string, an
             Vue.set(target, key, {});
             copyFrom(value, target[key]);
 
-        } else if (isObject(value) && isFunction(value.clone)) {
-            Vue.set(target, key, value.clone());
+        } else if (isObject(value) && isFunction((value as Collection | Model).clone)) {
+            Vue.set(target, key, (value as Collection | Model).clone());
 
         } else {
             Vue.set(target, key, cloneDeep(value));
@@ -225,7 +224,7 @@ class Model extends Base {
      * Returns the model's identifier value.
      */
     identifier(): string {
-        return this.get(this.getOption('identifier'));
+        return this.saved(this.getOption('identifier'));
     }
 
     /**
@@ -564,12 +563,14 @@ class Model extends Base {
         let changed: boolean = defined && ! isEqual(previous, value);
 
         if (changed) {
-            this.emit('change', {attribute, previous, value});
 
             // Validate on change only if it's not the first time it's set.
             if (this.getOption('validateOnChange')) {
                 Vue.nextTick(() => this.validateAttribute(attribute as string));
             }
+
+            // Emit the change event after
+            this.emit('change', {attribute, previous, value});
         }
 
         return value;
@@ -669,21 +670,22 @@ class Model extends Base {
             }
         }
 
-        return Promise.all<ValidationResult>(tasks).then((results: ValidationResult[]) => {
+        return Promise.all(tasks)
+            .then((results: ValidationResult[]) => {
 
-            // Errors will always be messages or nested error objects.
-            const errors: ValidationResultError[] = filter(results, (e) => isString(e) || isObject(e)) as ValidationResultError[];
+                // Errors will always be messages or nested error objects.
+                const errors: ValidationResultError[] = filter(results, (e) => isString(e) || isObject(e)) as ValidationResultError[];
 
-            // Set errors for the model being validated.
-            this.setAttributeErrors(attribute, errors);
+                // Set errors for the model being validated.
+                this.setAttributeErrors(attribute, errors);
 
-            // Check to see if we should yield only the first error.
-            if (this.getOption('useFirstErrorOnly') && !isEmpty(errors)) {
-                return first(errors) as string;
-            }
+                // Check to see if we should yield only the first error.
+                if (this.getOption('useFirstErrorOnly') && !isEmpty(errors)) {
+                    return first(errors)!;
+                }
 
-            return errors;
-        });
+                return errors;
+            });
     }
 
     /**
@@ -693,7 +695,7 @@ class Model extends Base {
      *
      * @returns {Promise}
      */
-    validate(attributes?: string | string[]): Promise<AttributesValidationErrors> {
+    validate(attributes?: string | string[]): Promise<ValidationResultError | ValidationResultError[]> {
         if (isUndefined(attributes)) {
             attributes = Object.keys(this._attributes);
         }
@@ -720,8 +722,7 @@ class Model extends Base {
             return Promise.all(tasks).then(() => $errors);
         }
 
-        return Promise.reject(
-            new Error("Invalid argument for validation attributes"));
+        return Promise.reject(new Error("Invalid argument for validation attributes"));
     }
 
     /**
@@ -777,7 +778,7 @@ class Model extends Base {
 
         // A fetch request must receive *some* data in return.
         if (isEmpty(attributes)) {
-            throw new ResponseError("No data in fetch response", response);
+            throw this.createResponseError("No data in fetch response", response);
         }
 
         this.assign(attributes as Record<string, any>);
@@ -803,46 +804,46 @@ class Model extends Base {
     /**
      * @returns {string} The key to use when generating the `patch` URL.
      */
-    getPatchRoute(): string {
-        return this.getRoute('patch', 'save');
+    getPatchRoute(): Method {
+        return this.getRoute('patch', 'save') as Method;
     }
 
     /**
      * @returns {string} The key to use when generating the `create` URL.
      */
-    getCreateRoute(): string {
-        return this.getRoute('create', 'save');
+    getCreateRoute(): Method {
+        return this.getRoute('create', 'save') as Method;
     }
 
     /**
      * @returns {string} The key to use when generating the `update` URL.
      */
-    getUpdateRoute(): string {
+    getUpdateRoute(): Method {
         if (this.shouldPatch()) {
             return this.getPatchRoute();
         }
 
-        return this.getRoute('update', 'save');
+        return this.getRoute('update', 'save') as Method;
     }
 
     /**
      * @returns {string} The method to use when making an update request.
      */
-    getUpdateMethod(): string {
+    getUpdateMethod(): Method {
         return this.shouldPatch() ? this.getPatchMethod() : super.getUpdateMethod();
     }
 
     /**
      * @returns {string} The method to use when making an save request.
      */
-    getSaveMethod(): string {
+    getSaveMethod(): Method {
         return this.isNew() ? this.getCreateMethod() : this.getUpdateMethod();
     }
 
     /**
      * @inheritDoc
      */
-    getSaveRoute(): string {
+    getSaveRoute(): Method {
         if (this.isNew()) {
             return this.getCreateRoute();
         }
@@ -1008,13 +1009,23 @@ class Model extends Base {
      * @param {Object|null} response
      */
     onSaveSuccess(response: ProxyResponse): void {
+        let action;
 
         // Clear errors because the request was successful.
         this.clearErrors();
 
-        // Update this model with the data that was returned in the response.
         if (response) {
-            this.update(response.getData());
+            let responseData = response.getData();
+
+            // Find if it's a create or update action
+            action = 'update';
+            if (response.getStatus() === 201 ||
+                ( ! this.saved('id') && (isPlainObject(responseData) && get(responseData, 'id')))) {
+                action = 'create'
+            }
+
+            // Update this model with the data that was returned in the response.
+            this.update(responseData);
         }
 
         Vue.set(this, 'saving', false);
@@ -1023,7 +1034,11 @@ class Model extends Base {
         // Automatically add to all registered collections.
         this.addToAllCollections();
 
-        this.emit('save', {error: null});
+        this.emit('save.success', {error: null});
+
+        if (action) {
+            this.emit(action, {error: null});
+        }
     }
 
     /**
@@ -1035,8 +1050,7 @@ class Model extends Base {
         let errors: Record<string, any> | null = error.getResponse()!.getValidationErrors();
 
         if ( ! isPlainObject(errors)) {
-            throw new ResponseError(
-                'Validation errors must be an object', error.getResponse());
+            throw this.createResponseError('Validation errors must be an object', error.getResponse());
         }
 
         this.setErrors(errors as Record<string, any>);
@@ -1072,7 +1086,7 @@ class Model extends Base {
             this.onFatalSaveFailure(error, response);
         }
 
-        this.emit('save', {error});
+        this.emit('save.failure', {error});
     }
 
     /**
@@ -1141,6 +1155,8 @@ class Model extends Base {
      * @returns {boolean} `false` if the request should not be made.
      */
     onSave(): Promise<RequestOperation> {
+        this.emit('save', { error: null });
+
         return new Promise((resolve, reject) => {
 
             // Don't save if we're already busy saving this model.
@@ -1170,7 +1186,7 @@ class Model extends Base {
                 }
 
                 Vue.set(this, 'saving', false);
-                reject(new ValidationError(this.errors));
+                reject(this.createValidationError(this.errors));
                 return;
             });
         });
@@ -1282,8 +1298,8 @@ interface ModelOptions extends Options {
 
 export type Mutation = (value: any) => any;
 
-export type ValidationTask        = true | string | Promise<AttributesValidationErrors>;
-export type ValidationResult      = true | string | AttributesValidationErrors;
+export type ValidationTask        = true | string | Promise<ValidationResult>;
+export type ValidationResult      = true | string | AttributesValidationErrors | (string | AttributesValidationErrors)[];
 export type ValidationResultError = string | AttributesValidationErrors;
 
 export interface AttributesValidationErrors {

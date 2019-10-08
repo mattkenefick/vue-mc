@@ -1,45 +1,45 @@
 import Vue from 'vue';
-import {
-    countBy,
-    defaultsDeep,
-    each,
-    filter,
-    find,
-    findIndex,
-    first,
-    get,
-    has,
-    isArray,
-    isEmpty,
-    isFunction,
-    isNil,
-    isObject,
-    isPlainObject,
-    join,
-    keyBy,
-    last,
-    map,
-    max,
-    merge,
-    method,
-    reduce,
-    set,
-    size,
-    sortBy,
-    sumBy,
-    toSafeInteger,
-    unset,
-    values,
-} from 'lodash'
 
-import Base, {RequestOperation, Options} from './Base';
-import Model, {AttributesValidationErrors} from './Model';
+import countBy from 'lodash/countBy';
+import defaultsDeep from 'lodash/defaultsDeep';
+import each from 'lodash/each';
+import every from 'lodash/every';
+import filter from 'lodash/filter';
+import find from 'lodash/find';
+import findIndex from 'lodash/findIndex';
+import first from 'lodash/first';
+import get from 'lodash/get';
+import has from 'lodash/has';
+import isArray from 'lodash/isArray';
+import isEmpty from 'lodash/isEmpty';
+import isFunction from 'lodash/isFunction';
+import isNil from 'lodash/isNil';
+import isObject from 'lodash/isObject';
+import isPlainObject from 'lodash/isPlainObject';
+import join from 'lodash/join';
+import keyBy from 'lodash/keyBy';
+import last from 'lodash/last';
+import map from 'lodash/map';
+import max from 'lodash/max';
+import merge from 'lodash/merge';
+import method from 'lodash/method';
+import reduce from 'lodash/reduce';
+import set from 'lodash/set';
+import size from 'lodash/size';
+import sortBy from 'lodash/sortBy';
+import sumBy from 'lodash/sumBy';
+import toSafeInteger from 'lodash/toSafeInteger';
+import unset from 'lodash/unset';
+import values from 'lodash/values';
+
+import Base, {Options, RequestOperation} from './Base';
+import Model, {AttributesValidationErrors, ValidationResultError} from './Model';
 import ResponseError from '../Errors/ResponseError';
 import ValidationError from '../Errors/ValidationError';
 import ProxyResponse from '../HTTP/ProxyResponse';
 import Response from '../HTTP/Response';
 
-    /**
+/**
  * Used as a marker to indicate that pagination is not enabled.
  */
 const NO_PAGE = null;
@@ -271,8 +271,13 @@ class Collection extends Base {
     /**
      * @returns {Promise}
      */
-    validate(): Promise<AttributesValidationErrors[]> {
-        return Promise.all(this.models.map((model) => model.validate()));
+    validate(): Promise<(ValidationResultError | ValidationResultError[])[]> {
+        let validations = this.models.map((model) => model.validate());
+
+        return Promise.all(validations).then((errors) => {
+            return every(errors, isEmpty) ? [] : errors;
+        });
+
     }
 
     /**
@@ -490,7 +495,7 @@ class Collection extends Base {
             filter = {_uid: model._uid};
         }
 
-        return findIndex(this.models, filter as _.PartialDeep<Model>);
+        return findIndex(this.models, filter);
     }
 
     /**
@@ -755,18 +760,14 @@ class Collection extends Base {
             // There is no sensible alternative to an array here, so anyting else
             // is considered an exception that indicates an unexpected state.
             if (!isArray(saved)) {
-                throw new ResponseError(
-                    'Response data must be an array or empty',
-                    response);
+                throw this.createResponseError('Response data must be an array or empty', response);
             }
 
             // Check that the number of models returned in the response matches
             // the number of models that were saved. If these are not equal, it's
             // not possible to map saved data to the saving models.
             if (saved.length !== saving.length) {
-                throw new ResponseError(
-                    'Expected the same number of models in the response',
-                    response);
+                throw this.createResponseError('Expected the same number of models in the response', response);
             }
 
             // Update every model with its respective response data.
@@ -812,8 +813,7 @@ class Collection extends Base {
         // assumption that the array of errors returned in the response must have
         // the same number of elements as there are models being saved.
         if (errors.length !== models.length) {
-            throw new ResponseError(
-                'Array of errors must equal the number of models');
+            throw this.createResponseError('Array of errors must equal the number of models');
         }
 
         // Set every model's errors in a way that emulates how saving a model
@@ -882,8 +882,7 @@ class Collection extends Base {
         let errors: any = response.getValidationErrors();
 
         if (!isPlainObject(errors) && !isArray(errors)) {
-            throw new ResponseError(
-                'Validation errors must be an object or array', response);
+            throw this.createResponseError('Validation errors must be an object or array', response);
         }
 
         this.setErrors(errors);

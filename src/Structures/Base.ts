@@ -1,29 +1,30 @@
-import Vue          from 'vue'
-import {
-    assign,
-    defaults,
-    defaultsDeep,
-    defaultTo,
-    each,
-    get,
-    invoke,
-    isFunction,
-    map,
-    reduce,
-    replace,
-    set,
-    split,
-    trim,
-    uniqueId,
-} from 'lodash'
-import Request      from '../HTTP/Request';
-import { autobind } from '../utils';
-import { AxiosRequestConfig } from 'axios';
-import RequestError from '../Errors/RequestError';
-import Model from './Model';
+import Vue from 'vue';
+import {autobind} from '../utils';
+import Request from '../HTTP/Request';
 import Response from '../HTTP/Response';
-import { BaseResponse } from '../HTTP/BaseResponse';
+import RequestError from '../Errors/RequestError';
 import ResponseError from '../Errors/ResponseError';
+import ValidationError, {Errors} from '../Errors/ValidationError';
+
+import assign from 'lodash/assign';
+import defaults from 'lodash/defaults';
+import defaultsDeep from 'lodash/defaultsDeep';
+import defaultTo from 'lodash/defaultTo';
+import each from 'lodash/each';
+import get from 'lodash/get';
+import invoke from 'lodash/invoke';
+import isFunction from 'lodash/isFunction';
+import map from 'lodash/map';
+import reduce from 'lodash/reduce';
+import replace from 'lodash/replace';
+import set from 'lodash/set';
+import split from 'lodash/split';
+import trim from 'lodash/trim';
+import uniqueId from 'lodash/uniqueId';
+
+import {AxiosRequestConfig, Method} from 'axios';
+import Model from './Model';
+import {BaseResponse} from '../HTTP/BaseResponse';
 
 export enum RequestOperation {
     REQUEST_CONTINUE  = 0,
@@ -369,42 +370,42 @@ abstract class Base {
     /**
      * @returns {string} HTTP method to use when making a save request.
      */
-    getSaveMethod(): string {
+    getSaveMethod(): Method {
         return this.getOption('methods.save');
     }
 
     /**
      * @returns {string} HTTP method to use when making a fetch request.
      */
-    getFetchMethod(): string {
+    getFetchMethod(): Method {
         return this.getOption('methods.fetch');
     }
 
     /**
      * @returns {string} HTTP method to use when updating a resource.
      */
-    getUpdateMethod(): string {
+    getUpdateMethod(): Method {
         return this.getOption('methods.update');
     }
 
     /**
      * @returns {string} HTTP method to use when patching a resource.
      */
-    getPatchMethod(): string {
+    getPatchMethod(): Method {
         return this.getOption('methods.patch');
     }
 
     /**
      * @returns {string} HTTP method to use when creating a resource.
      */
-    getCreateMethod(): string {
+    getCreateMethod(): Method {
         return this.getOption('methods.create');
     }
 
     /**
      * @returns {string} HTTP method to use when deleting a resource.
      */
-    getDeleteMethod(): string {
+    getDeleteMethod(): Method {
         return this.getOption('methods.delete');
     }
 
@@ -478,8 +479,29 @@ abstract class Base {
     /**
      * @returns {Request} A new `Request` using the given configuration.
      */
-    getRequest(config: AxiosRequestConfig): Request {
+    createRequest(config: AxiosRequestConfig): Request {
         return new Request(config);
+    }
+
+    /**
+     * Creates a request error based on a given existing error and optional response.
+     */
+    createRequestError(error: any, response: Response): RequestError {
+        return new RequestError(error, response);
+    }
+
+    /**
+     * Creates a response error based on a given existing error and response.
+     */
+    createResponseError(error: any, response?: Response): ResponseError {
+        return new ResponseError(error, response);
+    }
+
+    /**
+     * Creates a validation error using given errors and an optional message.
+     */
+    createValidationError(errors: Errors | Errors[], message?: string): ValidationError {
+        return new ValidationError(errors, message);
     }
 
     /**
@@ -513,7 +535,8 @@ abstract class Base {
                 }
 
                 // Make the request.
-                return this.getRequest(config)
+                return this
+                    .createRequest(config)
                     .send()
                     .then((response) => {
                         onSuccess(response);
@@ -543,13 +566,15 @@ abstract class Base {
      *
      * @returns {Promise}
      */
-    fetch(options = {}): Promise<Response | null> {
-        let config: object = (): object => defaults(options, {
-            url     : this.getFetchURL(),
-            method  : this.getFetchMethod(),
-            params  : this.getFetchQuery(),
-            headers : this.getFetchHeaders(),
-        });
+    fetch(options: RequestOptions = {}): Promise<Response | null> {
+        let config = (): AxiosRequestConfig => {
+            return {
+                url: defaultTo(options.url, this.getFetchURL()),
+                method: defaultTo(options.method, this.getFetchMethod()),
+                params: defaultTo(options.params, this.getFetchQuery()),
+                headers: defaultTo(options.headers, this.getFetchHeaders()),
+            }
+        };
 
         return this.request(
             config,
@@ -576,14 +601,16 @@ abstract class Base {
      *
      * @returns {Promise}
      */
-    save(options = {}): Promise<Response | null> {
-        let config: object = (): object => defaults(options, {
-            url     : this.getSaveURL(),
-            method  : this.getSaveMethod(),
-            data    : this.getSaveData(),
-            params  : this.getSaveQuery(),
-            headers : this.getSaveHeaders(),
-        });
+    save(options: RequestOptions = {}): Promise<Response | null> {
+        let config = (): AxiosRequestConfig => {
+            return {
+                url: defaultTo(options.url, this.getSaveURL()),
+                method: defaultTo(options.method, this.getSaveMethod()),
+                data: defaultTo(options.data, this.getSaveData()),
+                params: defaultTo(options.params, this.getSaveQuery()),
+                headers: defaultTo(options.headers, this.getSaveHeaders()),
+            }
+        };
 
         return this.request(
             config,
@@ -645,14 +672,16 @@ abstract class Base {
      *
      * @returns {Promise}
      */
-    delete(options = {}): Promise<Response | null> {
-        let config: object = (): object => defaults(options, {
-            url     : this.getDeleteURL(),
-            method  : this.getDeleteMethod(),
-            data    : this.getDeleteBody(),
-            params  : this.getDeleteQuery(),
-            headers : this.getDeleteHeaders(),
-        });
+    delete(options: RequestOptions = {}): Promise<Response | null> {
+        let config = (): AxiosRequestConfig => {
+            return {
+                url: defaultTo(options.url, this.getDeleteURL()),
+                method: defaultTo(options.method, this.getDeleteMethod()),
+                data: defaultTo(options.data, this.getDeleteBody()),
+                params: defaultTo(options.params, this.getDeleteQuery()),
+                headers: defaultTo(options.headers, this.getDeleteHeaders()),
+            }
+        };
 
         return this.request(
             config,
@@ -682,3 +711,11 @@ export type RequestSuccessCallback = (response: Response | null) => void;
 export type OnRequestCallback = () => Promise<number | boolean>;
 export type HttpMethods = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | string;
 export type RequestType = 'fetch' | 'save' | 'update' | 'create' | 'patch' | 'delete' | string;
+
+export interface RequestOptions {
+    url?: string;
+    method?: Method;
+    data?: any;
+    params?: Record<string, any>;
+    headers?: Record<string, any>;
+}
