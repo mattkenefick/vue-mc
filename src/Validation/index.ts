@@ -204,64 +204,64 @@ export const rule: RuleFunction = function (config: Config): Rule {
      * This is the function that is called when using this rule.
      * It has some extra metadata to allow rule chaining and custom formats.
      */
-        // @ts-ignore
+    // @ts-ignore
     let $rule: Rule = function (value: any, attribute: string, model: Model): string | true {
 
-            // `true` if this rule's core acceptance criteria was met.
-            let valid: boolean = test(value, attribute, model);
+        // `true` if this rule's core acceptance criteria was met.
+        let valid: boolean = test(value, attribute, model);
 
-            // If valid, check that all rules in the "and" chain also pass.
-            if (valid) {
-                for (let _and of $rule._and) {
-                    let result: string | boolean = _and(value, attribute, model);
+        // If valid, check that all rules in the "and" chain also pass.
+        if (valid) {
+            for (let _and of $rule._and) {
+                let result: string | boolean = _and(value, attribute, model);
 
-                    // If any of the chained rules return a string, we know that
-                    // that rule has failed, and therefore this chain is invalid.
-                    if (isString(result)) {
-                        return result;
-                    }
-                }
-
-                // Either there weren't any "and" rules or they all passed.
-                return true;
-
-                // This rule's acceptance criteria was not met, but there is a chance
-                // that a rule in the "or" chain's might pass.
-            } else {
-                for (let _or of $rule._or) {
-                    let result: string | boolean = _or(value, attribute, model);
-
-                    // A rule should either return true in the event of a general
-                    // "pass", or nothing at all. A failure would have to be a
-                    // string message (usually from another rule).
-                    if (result === true || isUndefined(result)) {
-                        return true;
-                    }
+                // If any of the chained rules return a string, we know that
+                // that rule has failed, and therefore this chain is invalid.
+                if (isString(result)) {
+                    return result;
                 }
             }
 
-            // At this point we want to report that this rule has failed, because
-            // none of the "and" or "or" chains passed either.
+            // Either there weren't any "and" rules or they all passed.
+            return true;
 
-            // Add the invalid value to the message context, which is made available
-            // to all rules by default. This allows for ${value} interpolation.
-            assign(data, {attribute, value});
+            // This rule's acceptance criteria was not met, but there is a chance
+            // that a rule in the "or" chain's might pass.
+        } else {
+            for (let _or of $rule._or) {
+                let result: string | boolean = _or(value, attribute, model);
 
-            // This would be a custom format explicitly set on this rule.
-            let format: string | _.TemplateExecutor | null = get($rule, '_format');
-
-            // Use the default message if an explicit format isn't set.
-            if (!format) {
-                return messages.get(name, data);
+                // A rule should either return true in the event of a general
+                // "pass", or nothing at all. A failure would have to be a
+                // string message (usually from another rule).
+                if (result === true || isUndefined(result)) {
+                    return true;
+                }
             }
+        }
 
-            // Replace the custom format with a template if it's still a string.
-            if (isString(format)) {
-                $rule._format = format = template(format);
-            }
+        // At this point we want to report that this rule has failed, because
+        // none of the "and" or "or" chains passed either.
 
-            return format(data);
-        };
+        // Add the invalid value to the message context, which is made available
+        // to all rules by default. This allows for ${value} interpolation.
+        assign(data, {attribute, value});
+
+        // This would be a custom format explicitly set on this rule.
+        let format: string | _.TemplateExecutor | null = get($rule, '_format');
+
+        // Use the default message if an explicit format isn't set.
+        if (!format) {
+            return messages.get(name, data);
+        }
+
+        // Replace the custom format with a template if it's still a string.
+        if (isString(format)) {
+            $rule._format = format = template(format);
+        }
+
+        return format(data);
+    };
 
     /**
      * @returns {Function} A copy of this rule, so that appending to a chain or

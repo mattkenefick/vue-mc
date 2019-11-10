@@ -529,7 +529,7 @@ describe('Model', () => {
                 defaults()   { return {y: 1} }
                 validation() { return {} }
             }
- 
+
             // A collection of some valid and some invalid models.
             let c = new Collection([
                 new ValidModel,
@@ -567,10 +567,10 @@ describe('Model', () => {
                         }
                     ],
                     "x": [
-                      "Must be a valid email address",
+                        "Must be a valid email address",
                     ]
                 });
-                
+
                 done();
             })
         })
@@ -579,7 +579,7 @@ describe('Model', () => {
             const ValidModel = class extends Model {
                 defaults()   { return {a: 1} }
             }
- 
+
             // A collection of some valid and some invalid models.
             let c = new Collection([
                 new ValidModel,
