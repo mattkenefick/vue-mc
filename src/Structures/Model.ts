@@ -670,11 +670,16 @@ class Model extends Base {
             }
         }
 
-        return Promise.all(tasks)
-            .then((results: ValidationResult[]) => {
+        return (Promise.all(tasks) as Promise<ValidationResultError[]>)
+            .then((errors: ValidationResultError[]): ValidationResultError | ValidationResultError[] => {
+
+                // Unpack a nested error set.
+                if (isArray(errors) && isArray(first(errors))) {
+                    errors = first(errors as ValidationResult[]) as ValidationResultError[];
+                }
 
                 // Errors will always be messages or nested error objects.
-                const errors: ValidationResultError[] = filter(results, (e) => isString(e) || isObject(e)) as ValidationResultError[];
+                errors = filter(errors, (e) => isString(e) || isObject(e)) as ValidationResultError[];
 
                 // Set errors for the model being validated.
                 this.setAttributeErrors(attribute, errors);

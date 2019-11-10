@@ -571,8 +571,8 @@ abstract class Base {
             return {
                 url: defaultTo(options.url, this.getFetchURL()),
                 method: defaultTo(options.method, this.getFetchMethod()),
-                params: defaultTo(options.params, this.getFetchQuery()),
-                headers: defaultTo(options.headers, this.getFetchHeaders()),
+                params: defaults(options.params, this.getFetchQuery()),
+                headers: defaults(options.headers, this.getFetchHeaders()),
             }
         };
 

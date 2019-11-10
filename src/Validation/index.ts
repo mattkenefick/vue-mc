@@ -198,12 +198,13 @@ export const messages =
 export const rule: RuleFunction = function (config: Config): Rule {
     let name: string = get(config, 'name');
     let data: Record<string, any> = get(config, 'data', {}) as Record<string, any>;
-    let test: TestFunction = get(config, 'test', stubTrue);
+    let test: TestFunction = get(config, 'test', stubTrue());
 
     /**
      * This is the function that is called when using this rule.
      * It has some extra metadata to allow rule chaining and custom formats.
      */
+    // The @ts-ignore is for missing properties which are assigned at the end of this function.
     // @ts-ignore
     let $rule: Rule = function (value: any, attribute: string, model: Model): string | true {
 
