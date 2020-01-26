@@ -72,7 +72,7 @@ const copyFrom = function(source: Record<string, any>, target: Record<string, an
         source = pick(source, keys);
     }
 
-    each(source, (value, key) => {
+    each(source, (value, key): void => {
         if (isArray(value)) {
             Vue.set(target, key, []);
             copyFrom(value, target[key]);
@@ -217,7 +217,7 @@ class Model extends Base {
             'routes',      //  /
         ];
 
-        each(memoized, (name) => this[name] = once(this[name]));
+        each(memoized, (name): void => this[name] = once(this[name]));
     }
 
     /**
@@ -308,7 +308,7 @@ class Model extends Base {
      * Compiles all mutations into pipelines that can be executed quickly.
      */
     compileMutators(): void {
-        this._mutations = mapValues(this.mutations(), (m: Mutation | Mutation[]) => flow(m as Mutation[]));
+        this._mutations = mapValues(this.mutations(), (m: Mutation | Mutation[]): Mutation => flow(m as Mutation[]));
     }
 
     /**
@@ -451,13 +451,13 @@ class Model extends Base {
      */
     mutate(attribute?: string | string[]): void {
         if (isUndefined(attribute)) {
-            each(this._attributes, (value, attribute) => {
+            each(this._attributes, (value, attribute): void => {
                 Vue.set(this._attributes, attribute, this.mutated(attribute, value));
             });
 
         // Only mutate specific attributes.
         } else {
-            each(castArray(attribute), (attribute) => {
+            each(castArray(attribute), (attribute): void => {
                 let current: any = this.get(attribute);
                 let mutated: any = this.mutated(attribute, current);
 
@@ -492,7 +492,7 @@ class Model extends Base {
             Vue.set(this, '_reference', active);
 
         } else {
-            each(castArray(attribute), (attribute) => {
+            each(castArray(attribute), (attribute): void => {
                 Vue.set(this._reference, attribute, get(active, attribute));
             });
         }
@@ -515,8 +515,8 @@ class Model extends Base {
         // Create dynamic accessors and mutations so that we can update the
         // model directly while also keeping the model attributes in sync.
         Object.defineProperty(this, attribute, {
-            get: ()      => this.get(attribute),
-            set: (value) => this.set(attribute, value),
+            get: (): any => this.get(attribute),
+            set: <T>(value: T): T | undefined => this.set(attribute, value),
         });
     }
 
@@ -534,7 +534,7 @@ class Model extends Base {
 
         // Allow batch set of multiple attributes at once, ie. set({...});
         if (isPlainObject(attribute)) {
-            each(attribute as Record<string, any>, (value, key) => {
+            each(attribute as Record<string, any>, (value, key): void => {
                 this.set(key, value);
             });
 
@@ -566,7 +566,7 @@ class Model extends Base {
 
             // Validate on change only if it's not the first time it's set.
             if (this.getOption('validateOnChange')) {
-                Vue.nextTick(() => this.validateAttribute(attribute as string));
+                Vue.nextTick((): Promise<ValidationResultErrorFinalResult> => this.validateAttribute(attribute as string));
             }
 
             // Emit the change event after
@@ -594,7 +594,7 @@ class Model extends Base {
         let attributes: string | string[] = defaultTo(attribute, keys(this._attributes));
 
         // Unset either specific attributes or all attributes if none provided.
-        each(castArray(attributes), (attribute) => {
+        each(castArray(attributes), (attribute): void => {
             if (this.has(attribute)) {
                 Vue.set(this._attributes, attribute, get(defaults, attribute));
             }
@@ -654,14 +654,14 @@ class Model extends Base {
      *
      * @returns {boolean} `true` if valid, `false` otherwise.
      */
-    validateAttribute(attribute: string): Promise<ValidationResultError | ValidationResultError[]> {
+    validateAttribute(attribute: string): Promise<ValidationResultErrorFinalResult> {
         if (!this.has(attribute)) {
             return Promise.reject(new Error(`'${attribute}' is not defined`));
         }
 
         let value: any              = this.get(attribute);
         let rules: Rule[]           = this.getValidateRules(attribute);
-        let tasks: ValidationTask[] = rules.map((rule) => rule(value, attribute, this));
+        let tasks: ValidationTask[] = rules.map((rule): true | string => rule(value, attribute, this));
 
         // Check if any nested values should be validated also.
         if (this.getOption('validateRecursively')) {
@@ -671,7 +671,7 @@ class Model extends Base {
         }
 
         return (Promise.all(tasks) as Promise<ValidationResultError[]>)
-            .then((errors: ValidationResultError[]): ValidationResultError | ValidationResultError[] => {
+            .then((errors: ValidationResultError[]): ValidationResultErrorFinalResult => {
 
                 // Unpack a nested error set.
                 if (isArray(errors) && isArray(first(errors))) {
@@ -679,7 +679,7 @@ class Model extends Base {
                 }
 
                 // Errors will always be messages or nested error objects.
-                errors = filter(errors, (e) => isString(e) || isObject(e)) as ValidationResultError[];
+                errors = filter(errors, (e): boolean => isString(e) || isObject(e)) as ValidationResultError[];
 
                 // Set errors for the model being validated.
                 this.setAttributeErrors(attribute, errors);
@@ -700,31 +700,31 @@ class Model extends Base {
      *
      * @returns {Promise}
      */
-    validate(attributes?: string | string[]): Promise<ValidationResultError | ValidationResultError[]> {
+    validate(attributes?: string | string[]): Promise<ValidationResultErrorFinalResult> {
         if (isUndefined(attributes)) {
             attributes = Object.keys(this._attributes);
         }
 
         // Support a single, string attribute.
         if (isString(attributes)) {
-            return this.validateAttribute(attributes).then((errors) => {
+            return this.validateAttribute(attributes).then((errors): Record<string, string> => {
                 return (!isEmpty(errors) ? {[attributes as string]: errors} : {}) as Record<string, string>;
             });
         }
 
         // Support an array of attributes to validate.
         if (isArray(attributes)) {
-            let $errors: Record<string, ValidationResultError | ValidationResultError[]> = {};
+            let $errors: Record<string, ValidationResultErrorFinalResult> = {};
 
-            let tasks: Promise<void>[] = attributes.map((attribute) => {
-                return this.validateAttribute(attribute).then((errors: ValidationResultError | ValidationResultError[]) => {
+            let tasks: Promise<void>[] = attributes.map((attribute): Promise<void> => {
+                return this.validateAttribute(attribute).then((errors: ValidationResultErrorFinalResult): void => {
                     if (!isEmpty(errors)) {
                         $errors[attribute] = errors;
                     }
                 });
             });
 
-            return Promise.all(tasks).then(() => $errors);
+            return Promise.all(tasks).then((): Record<string, ValidationResultErrorFinalResult> => $errors);
         }
 
         return Promise.reject(new Error("Invalid argument for validation attributes"));
@@ -766,7 +766,7 @@ class Model extends Base {
     changed(): string[] | false {
         let changed: string[] = [];
 
-        each(this._attributes, (value, attribute) => {
+        each(this._attributes, (value, attribute): void => {
             if ( ! isEqual(value, this.saved(attribute))) {
                 changed.push(attribute);
             }
@@ -984,7 +984,7 @@ class Model extends Base {
             return;
         }
 
-        each(errors, (errors, attribute) => {
+        each(errors, (errors, attribute): void => {
             this.setAttributeErrors(attribute, errors);
         });
     }
@@ -1162,19 +1162,17 @@ class Model extends Base {
     onSave(): Promise<RequestOperation> {
         this.emit('save', { error: null });
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject): void => {
 
             // Don't save if we're already busy saving this model.
             // This prevents things like accidental double-clicks.
             if (this.saving) {
-                resolve(Base.REQUEST_SKIP);
-                return;
+                return resolve(Base.REQUEST_SKIP);
             }
 
             // Don't save if no data has changed, but consider it a success.
             if ( ! this.getOption('saveUnchanged') && ! this.changed()) {
-                resolve(Base.REQUEST_REDUNDANT);
-                return;
+                return resolve(Base.REQUEST_REDUNDANT);
             }
 
             Vue.set(this, 'saving', true);
@@ -1184,15 +1182,13 @@ class Model extends Base {
                 this.mutate();
             }
 
-            this.validate().then((errors) => {
+            this.validate().then((errors): void => {
                 if (isEmpty(errors)) {
-                    resolve(Base.REQUEST_CONTINUE);
-                    return;
+                    return resolve(Base.REQUEST_CONTINUE);
                 }
 
                 Vue.set(this, 'saving', false);
-                reject(this.createValidationError(this.errors));
-                return;
+                return reject(this.createValidationError(this.errors));
             });
         });
     }
@@ -1306,7 +1302,8 @@ export type Mutation = (value: any) => any;
 export type ValidationTask        = true | string | Promise<ValidationResult>;
 export type ValidationResult      = true | string | AttributesValidationErrors | (string | AttributesValidationErrors)[];
 export type ValidationResultError = string | AttributesValidationErrors;
+export type ValidationResultErrorFinalResult = ValidationResultError | ValidationResultError[];
 
 export interface AttributesValidationErrors {
-    [key: string]: ValidationResultError | ValidationResultError[];
+    [key: string]: ValidationResultErrorFinalResult;
 }

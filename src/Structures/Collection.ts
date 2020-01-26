@@ -138,7 +138,7 @@ class Collection extends Base {
     //    set<T>(attribute: string | Record<string, any>, value?: T): T | undefined
     set(attribute: string | Record<string, any>, value?: any): void {
         if (isPlainObject(attribute)) {
-            each(attribute as Record<string, any>, (value, key) => {
+            each(attribute as Record<string, any>, (value, key): void => {
                 this.set(key, value);
             });
 
@@ -215,7 +215,7 @@ class Collection extends Base {
         Vue.set(this, 'models', []);
 
         // Notify each model that it has been removed from this collection.
-        each(models, (model: Model) => {
+        each(models, (model: Model): void => {
             this.onRemove(model);
         });
     }
@@ -271,12 +271,13 @@ class Collection extends Base {
     /**
      * @returns {Promise}
      */
-    validate(): Promise<(ValidationResultError | ValidationResultError[])[]> {
-        let validations = this.models.map((model) => model.validate());
+    validate(): Promise<(ValidationResultErrorFinalResult)[]> {
+        let validations = this.models.map((model): Promise<ValidationResultErrorFinalResult> => model.validate());
 
-        return Promise.all(validations).then((errors) => {
-            return every(errors, isEmpty) ? [] : errors;
-        });
+        return Promise.all(validations)
+            .then((errors: ValidationResultErrorFinalResult[]): ValidationResultErrorFinalResult[] => {
+                return every(errors, isEmpty) ? [] : errors;
+            });
 
     }
 
@@ -773,7 +774,7 @@ class Collection extends Base {
             // Update every model with its respective response data.
             // A strict requirement and assumption is that the models returned
             // in the response are in the same order as they are in the collection.
-            each(saved, (data, index) => {
+            each(saved, (data, index): void => {
                 saving[index].onSaveSuccess(new ProxyResponse(
                     200, data, response.getHeaders()
                 ));
@@ -821,7 +822,7 @@ class Collection extends Base {
         //
         // A strict requirement and assumption is that the models returned
         // in the response are in the same order as they are in the collection.
-        each(models, (model, index) => {
+        each(models, (model, index): void => {
             model.setErrors(errors[index]);
             Vue.set(model, 'saving', false);
             Vue.set(model, 'fatal', false);
@@ -835,9 +836,9 @@ class Collection extends Base {
      * @param  {integer} status Response status
      */
     applyValidationErrorObject(errors: Record<string, Record<string, string | string[]>>): void {
-        let lookup: Record<string, Model> = keyBy(this.models, (model) => model.identifier());
+        let lookup: Record<string, Model> = keyBy(this.models, (model): string => model.identifier());
 
-        each(errors, (errors, identifier) => {
+        each(errors, (errors, identifier): void => {
             let model: Model = get(lookup, identifier);
 
             if (model) {
@@ -899,7 +900,7 @@ class Collection extends Base {
      * @param {Object} response
      */
     onFatalSaveFailure(error: any, response?: any): void {
-        each(this.getSavingModels(), (model) => {
+        each(this.getSavingModels(), (model): void => {
             model.onFatalSaveFailure(error, response);
         });
 
@@ -1046,7 +1047,7 @@ class Collection extends Base {
      * @returns {boolean|undefined} `false` if the request should not be made.
      */
     onFetch(): Promise<RequestOperation> {
-        return new Promise((resolve) => {
+        return new Promise((resolve): void => {
 
             // Don't fetch if there are no more results to be fetched.
             if (this.isPaginated() && this.isLastPage()) {
@@ -1070,7 +1071,7 @@ class Collection extends Base {
         Vue.set(this, 'deleting', false);
         Vue.set(this, 'fatal', false);
 
-        each(this.getDeletingModels(), (model) => {
+        each(this.getDeletingModels(), (model): void => {
             model.onDeleteSuccess(response);
         });
 
@@ -1087,7 +1088,7 @@ class Collection extends Base {
         Vue.set(this, 'fatal', true);
         Vue.set(this, 'deleting', false);
 
-        each(this.getDeletingModels(), (model) => {
+        each(this.getDeletingModels(), (model): void => {
             model.onDeleteFailure(error);
         });
 
@@ -1110,8 +1111,8 @@ class Collection extends Base {
         }
 
         let valid = true;
-        let tasks: Promise<RequestOperation | void>[] = this.models.map((model) => {
-            return model.onSave().catch((error) => {
+        let tasks: Promise<RequestOperation | void>[] = this.models.map((model): Promise<RequestOperation | void> => {
+            return model.onSave().catch((error): void => {
                 if (error instanceof ValidationError) {
                     valid = false;
                 } else {
@@ -1122,7 +1123,7 @@ class Collection extends Base {
 
         // Call 'onSave' on each model so that the models can set their state
         // accordingly, and indicate whether a validation failure should occur.
-        return Promise.all(tasks).then(() => {
+        return Promise.all(tasks).then((): RequestOperation => {
             if (!valid) {
                 throw new ValidationError(this.getErrors());
             }
@@ -1187,16 +1188,16 @@ class Collection extends Base {
             return Promise.resolve(Base.REQUEST_SKIP);
         }
 
-        return Promise.all(this.models.map((m) => m.onDelete())).then(() => {
+        return Promise.all(this.models.map((m): Promise<RequestOperation> => m.onDelete()))
+            .then((): RequestOperation => {
+                // No need to do anything if no models should be deleted.
+                if (isEmpty(this.getDeletingModels())) {
+                    return Base.REQUEST_REDUNDANT;
+                }
 
-            // No need to do anything if no models should be deleted.
-            if (isEmpty(this.getDeletingModels())) {
-                return Base.REQUEST_REDUNDANT;
-            }
-
-            Vue.set(this, 'deleting', true);
-            return Base.REQUEST_CONTINUE;
-        });
+                Vue.set(this, 'deleting', true);
+                return Base.REQUEST_CONTINUE;
+            });
     }
 
     /**
@@ -1204,8 +1205,8 @@ class Collection extends Base {
      *
      * @return {object[]} converted collection
      */
-    toArray(): Record<string, any> {
-        return this.map(model => model.toJSON());
+    toArray(): Record<string, any>[] {
+        return this.map((model): Record<string, any> => model.toJSON());
     }
 }
 

@@ -100,7 +100,7 @@ class GlobalMessages {
     register(bundle: Bundle): void {
         let locale: string = toLower(bundle.locale);
 
-        each(get(bundle, 'messages', {}), (message, name) => {
+        each(get(bundle, 'messages', {}), (message, name): void => {
             set(this.$locales, [locale, name], template(message));
         });
     }
@@ -268,7 +268,7 @@ export const rule: RuleFunction = function (config: Config): Rule {
      * @returns {Function} A copy of this rule, so that appending to a chain or
      *                     setting a custom format doesn't modify the base rule.
      */
-    $rule.copy = () => {
+    $rule.copy = (): Rule => {
         return assign(rule({name, test, data}), pick($rule, [
             '_format',
             '_and',
@@ -281,7 +281,7 @@ export const rule: RuleFunction = function (config: Config): Rule {
      *
      * @param {string|Function} format
      */
-    $rule.format = (format: string | _.TemplateExecutor) => {
+    $rule.format = (format: string | _.TemplateExecutor): Rule => {
         return assign($rule.copy(), {_format: format});
     };
 
@@ -291,7 +291,7 @@ export const rule: RuleFunction = function (config: Config): Rule {
      *
      * @param {Function|Function[]} rules One or more functions to add to the chain.
      */
-    $rule.or = (rules: Rule | Rule[]) => {
+    $rule.or = (rules: Rule | Rule[]): Rule => {
         return assign($rule.copy(), {_or: concat($rule._or, rules)});
     };
 
@@ -301,7 +301,7 @@ export const rule: RuleFunction = function (config: Config): Rule {
      *
      * @param {Function|Function[]} rules One or more functions to add to the chain.
      */
-    $rule.and = (rules: Rule | Rule[]) => {
+    $rule.and = (rules: Rule | Rule[]): Rule => {
         return assign($rule.copy(), {_and: concat($rule._and, rules)});
     };
 
@@ -323,7 +323,7 @@ export const after = function (date: Date): Rule {
     return rule({
         name: 'after',
         data: {date},
-        test: (value: string | number | Date) => isAfterDate(parseDate(value), parseDate(date)),
+        test: (value: string | number | Date): boolean => isAfterDate(parseDate(value), parseDate(date)),
     });
 };
 
@@ -332,7 +332,7 @@ export const after = function (date: Date): Rule {
  */
 export const alpha: Rule = rule({
     name: 'alpha',
-    test: (value: any) => {
+    test: (value: any): boolean => {
         return isString(value) && isAlpha(deburr(value));
     },
 });
@@ -342,7 +342,7 @@ export const alpha: Rule = rule({
  */
 export const alphanumeric: Rule = rule({
     name: 'alphanumeric',
-    test: (value: any) => {
+    test: (value: any): boolean => {
         return isString(value) && isAlphanumeric(deburr(value));
     },
 });
@@ -360,7 +360,7 @@ export const array: Rule = rule({
  */
 export const ascii: Rule = rule({
     name: 'ascii',
-    test: (value: any) => isString(value) && /^[\x00-\x7F]+$/.test(value),
+    test: (value: any): boolean => isString(value) && /^[\x00-\x7F]+$/.test(value),
 });
 
 /**
@@ -368,7 +368,7 @@ export const ascii: Rule = rule({
  */
 export const base64: Rule = rule({
     name: 'base64',
-    test: (value: any) => isString(value) && isBase64(value),
+    test: (value: any): boolean => isString(value) && isBase64(value),
 });
 
 /**
@@ -378,7 +378,7 @@ export const before = function (date: Date): Rule {
     return rule({
         name: 'before',
         data: {date},
-        test: (value: string | number | Date) => isBeforeDate(parseDate(value), parseDate(date)),
+        test: (value: string | number | Date): boolean => isBeforeDate(parseDate(value), parseDate(date)),
     });
 };
 
@@ -392,7 +392,7 @@ export const between: RuleFunction = function (min: string | number | Date, max:
     return rule({
         data: {min, max},
         name: inclusive ? 'between_inclusive' : 'between',
-        test: (value: any) => {
+        test: (value: any): boolean => {
             let _value: number = +(isString(value) ? parseDate(value) : value);
 
             return inclusive
@@ -415,7 +415,7 @@ export const boolean: Rule = rule({
  */
 export const creditcard: Rule = rule({
     name: 'creditcard',
-    test: (value: any) => isString(value) && isCreditCard(value),
+    test: (value: any): boolean => isString(value) && isCreditCard(value),
 });
 
 /**
@@ -437,7 +437,7 @@ export const dateformat: RuleFunction = function (format): Rule {
     return rule({
         name: 'dateformat',
         data: {format},
-        test: (value: string) => {
+        test: (value: string): boolean => {
             try {
                 return isValidDate(parseDate(value.toString(), format))
                     && formatDate(parseDate(value.toString(), format), format) === value.toString();
@@ -458,7 +458,7 @@ export const dateformat: RuleFunction = function (format): Rule {
  */
 export const defined: Rule = rule({
     name: 'defined',
-    test: (value: any) => !isUndefined(value),
+    test: (value: any): boolean => !isUndefined(value),
 });
 
 /**
@@ -466,7 +466,7 @@ export const defined: Rule = rule({
  */
 export const email: Rule = rule({
     name: 'email',
-    test: (value: any) => isString(value) && isEmail(value),
+    test: (value: any): boolean => isString(value) && isEmail(value),
 });
 
 /**
@@ -486,7 +486,7 @@ export const equals: RuleFunction = function (other): Rule {
     return rule({
         name: 'equals',
         data: {other},
-        test: (value: any) => isEqual(value, other),
+        test: (value: any): boolean => isEqual(value, other),
     });
 };
 
@@ -504,7 +504,7 @@ export const gt: RuleFunction = function (min): Rule {
     return rule({
         name: 'gt',
         data: {min},
-        test: (value: any) => greaterThan(value, min),
+        test: (value: any): boolean => greaterThan(value, min),
     });
 };
 
@@ -515,7 +515,7 @@ export const gte: RuleFunction = function (min): Rule {
     return rule({
         name: 'gte',
         data: {min},
-        test: (value: any) => greaterOrEqualTo(value, min),
+        test: (value: any): boolean => greaterOrEqualTo(value, min),
     });
 };
 
@@ -532,7 +532,7 @@ export const integer: Rule = rule({
  */
 export const ip: Rule = rule({
     name: 'ip',
-    test: (value: any) => isString(value) && isIP(value),
+    test: (value: any): boolean => isString(value) && isIP(value),
 });
 
 /**
@@ -540,7 +540,7 @@ export const ip: Rule = rule({
  */
 export const isblank: Rule = rule({
     name: 'isblank',
-    test: (value: any) => value === '',
+    test: (value: any): boolean => value === '',
 });
 
 /**
@@ -564,7 +564,7 @@ export const isnull: Rule = rule({
  */
 export const iso8601: Rule = rule({
     name: 'iso8601',
-    test: (value: any) => isString(value) && isISO8601(value),
+    test: (value: any): boolean => isString(value) && isISO8601(value),
 });
 
 /**
@@ -572,7 +572,7 @@ export const iso8601: Rule = rule({
  */
 export const json: Rule = rule({
     name: 'json',
-    test: (value: any) => isString(value) && isJSON(value),
+    test: (value: any): boolean => isString(value) && isJSON(value),
 });
 
 /**
@@ -588,7 +588,7 @@ export const length: RuleFunction = function (min: number, max: number): Rule {
         return rule({
             name: 'length',
             data: {min, max},
-            test: (value?: string | object | null) => size(value) >= min,
+            test: (value?: string | object | null): boolean => size(value) >= min,
         });
     }
 
@@ -596,7 +596,7 @@ export const length: RuleFunction = function (min: number, max: number): Rule {
     return rule({
         name: 'length_between',
         data: {min, max},
-        test: (value?: string | object | null) => {
+        test: (value?: string | object | null): boolean => {
             let length: number = size(value);
             return length >= min && length <= max;
         },
@@ -610,7 +610,7 @@ export const lt: RuleFunction = function (max): Rule {
     return rule({
         name: 'lt',
         data: {max},
-        test: (value: any) => lessThan(value, max),
+        test: (value: any): boolean => lessThan(value, max),
     });
 };
 
@@ -621,7 +621,7 @@ export const lte: RuleFunction = function (max: any): Rule {
     return rule({
         name: 'lte',
         data: {max},
-        test: (value: any) => lessOrEqualTo(value, max),
+        test: (value: any): boolean => lessOrEqualTo(value, max),
     });
 };
 
@@ -632,7 +632,7 @@ export const match: RuleFunction = function (pattern: string | RegExp): Rule {
     return rule({
         name: 'match',
         data: {pattern},
-        test: (value: string) => (new RegExp(pattern)).test(value),
+        test: (value: string): boolean => (new RegExp(pattern)).test(value),
     });
 };
 
@@ -655,7 +655,7 @@ export const min: RuleFunction = function (min: any): Rule {
  */
 export const negative: Rule = rule({
     name: 'negative',
-    test: (value: any) => toNumber(value) < 0,
+    test: (value: any): boolean => toNumber(value) < 0,
 });
 
 /**
@@ -664,7 +664,7 @@ export const negative: Rule = rule({
 export const not: RuleFunction = function (...values: any[]): Rule {
     return rule({
         name: 'not',
-        test: (value: any) => !includes(values, value),
+        test: (value: any): boolean => !includes(values, value),
     });
 };
 
@@ -673,7 +673,7 @@ export const not: RuleFunction = function (...values: any[]): Rule {
  */
 export const number: Rule = rule({
     name: 'number',
-    test: (value: any) => isFinite(value),
+    test: (value: any): boolean => isFinite(value),
 });
 
 /**
@@ -681,7 +681,7 @@ export const number: Rule = rule({
  */
 export const numeric: Rule = rule({
     name: 'numeric',
-    test: (value: any) => {
+    test: (value: any): boolean => {
         return (isNumber(value) && !isNaN(value))
             || (value && isString(value) && !isNaN(toNumber(value)));
     },
@@ -692,7 +692,7 @@ export const numeric: Rule = rule({
  */
 export const object: Rule = rule({
     name: 'object',
-    test: (value: any) => {
+    test: (value: any): boolean => {
         return isObject(value)
             && !isArray(value)
             && !isFunction(value);
@@ -704,7 +704,7 @@ export const object: Rule = rule({
  */
 export const positive: Rule = rule({
     name: 'positive',
-    test: (value: any) => toNumber(value) > 0,
+    test: (value: any): boolean => toNumber(value) > 0,
 });
 
 /**
@@ -712,7 +712,7 @@ export const positive: Rule = rule({
  */
 export const required: Rule = rule({
     name: 'required',
-    test: (value: any) => !(isNil(value) || value === ''),
+    test: (value: any): boolean => !(isNil(value) || value === ''),
 });
 
 /**
@@ -722,7 +722,7 @@ export const same: RuleFunction = function (other: string): Rule {
     return rule({
         name: 'same',
         data: {other},
-        test: (value: any, attribute: string, model: Model) => isEqual(value, model.get(other)),
+        test: (value: any, attribute: string, model: Model): boolean => isEqual(value, model.get(other)),
     });
 };
 
@@ -739,7 +739,7 @@ export const string: Rule = rule({
  */
 export const url: Rule = rule({
     name: 'url',
-    test: (value: any) => isString(value) && isURL(value),
+    test: (value: any): boolean => isString(value) && isURL(value),
 });
 
 /**
@@ -747,7 +747,7 @@ export const url: Rule = rule({
  */
 export const uuid: Rule = rule({
     name: 'uuid',
-    test: (value: any) => isString(value) && isUUID(value),
+    test: (value: any): boolean => isString(value) && isUUID(value),
 });
 
 declare global {

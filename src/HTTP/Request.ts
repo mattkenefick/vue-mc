@@ -30,7 +30,7 @@ export default class Request {
         return axios
             .request(this.config)
             .then(this.createResponse)
-            .catch((error: AxiosError) => {
+            .catch((error: AxiosError): never => {
                 throw this.createError(error);
             });
     }

@@ -1,7 +1,7 @@
 /**
  * Binds all methods of a class instance to itself.
  */
-export const autobind = function(instance: any) {
+export const autobind = function(instance: any): void {
     for (let obj = instance; obj; obj = Object.getPrototypeOf(obj)) {
 
         // We're the end of the inheritance chain if we've reached 'Object'.

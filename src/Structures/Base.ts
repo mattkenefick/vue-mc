@@ -126,7 +126,7 @@ abstract class Base {
 
         // Run through each listener. If any of them return false, stop the
         // iteration and mark that the event wasn't handled by all listeners.
-        each(listeners, (listener: Listener) => listener(context));
+        each(listeners, (listener: Listener): void => listener(context));
     }
 
     /**
@@ -140,7 +140,7 @@ abstract class Base {
     on(event: string, listener: Listener): void {
         let events: string[] = map(split(event, ','), trim);
 
-        each(events, (event: string) => {
+        each(events, (event: string): void => {
             this._listeners[event] = this._listeners[event] || [];
             this._listeners[event].push(listener);
         });
@@ -266,11 +266,11 @@ abstract class Base {
      * @returns {Function}
      */
     getDefaultRouteResolver(): RouteResolver {
-        return (route, parameters: Record<string, string> = {}) => {
+        return (route, parameters: Record<string, string> = {}): string => {
             let replacements: Record<string, string> = this.getRouteReplacements(route, parameters);
 
             // Replace all route parameters with their replacement values.
-            return reduce(replacements, (result, value, parameter) => {
+            return reduce(replacements, (result, value, parameter): string => {
                 return replace(result, parameter, value);
             }, route);
         };
@@ -514,8 +514,8 @@ abstract class Base {
      */
     request(config: AxiosRequestConfig | (() => AxiosRequestConfig), onRequest: OnRequestCallback,
             onSuccess: RequestSuccessCallback, onFailure: RequestFailureCallback): Promise<Response | null> {
-        return new Promise((resolve, reject) => {
-            return onRequest().then((status: RequestOperation | boolean) => {
+        return new Promise((resolve, reject): Promise<void> => {
+            return onRequest().then((status: RequestOperation | boolean): void | Promise<void> => {
                 switch (status) {
                     case RequestOperation.REQUEST_CONTINUE:
                         break;
@@ -538,11 +538,11 @@ abstract class Base {
                 return this
                     .createRequest(config)
                     .send()
-                    .then((response) => {
+                    .then((response): void => {
                         onSuccess(response);
                         resolve(response);
                     })
-                    .catch((error: ResponseError) => {
+                    .catch((error: ResponseError): void => {
                         onFailure(error, error.response);
                         reject(error);
                     })
@@ -629,7 +629,7 @@ abstract class Base {
     convertObjectToFormData(data: Record<string, string | Blob>): FormData {
         let form: FormData = new FormData();
 
-        each(data, (value, key) => {
+        each(data, (value, key): void => {
             form.append(key, value);
         });
 
