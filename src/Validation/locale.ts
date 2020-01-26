@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 /**
  * Afrikaans
  */
@@ -47,7 +48,7 @@ export const af_za: Bundle = {
         url: "Moet 'n geldige URL wees",
         uuid: "Moet 'n geldige UUID wees",
     },
-}
+};
 
 /**
  * Arabic - Republic of Iraq
@@ -98,7 +99,7 @@ export const ar_iq: Bundle = {
         url: 'يجب أن يكون عنوان URL صالحًا',
         uuid: 'يجب أن يكون UUID صالح',
     },
-}
+};
 
 /**
  * English - United States (Default)
@@ -149,7 +150,7 @@ export const en_us: Bundle = {
         url: 'Must be a valid URL',
         uuid: 'Must be a valid UUID',
     },
-}
+};
 
 /**
  * Persian - Islamic Republic of Iran
@@ -200,7 +201,7 @@ export const fa_ir: Bundle = {
         url: 'باید یک آدرس URL معتبر باشد',
         uuid: 'باید یک UUID معتبر باشد',
     },
-}
+};
 
 /**
  * Portuguese - Brazil
@@ -251,7 +252,7 @@ export const pt_br: Bundle = {
         url: 'Deve ser uma URL válida',
         uuid: 'Deve ser um UUID válido',
     },
-}
+};
 
 /**
  * Dutch - The Netherlands
@@ -302,7 +303,7 @@ export const nl_nl: Bundle = {
         url: 'Moet een geldige URL zijn',
         uuid: 'Moet een geldige UUID zijn',
     },
-}
+};
 
 /**
  * Polish - Poland
@@ -353,7 +354,7 @@ export const pl_pl: Bundle = {
         url: 'Musi być poprawnym adresem URL',
         uuid: 'Musi być poprawnym identyfikatorem UUID',
     },
-}
+};
 
 /**
  * Russian - Russia
@@ -404,7 +405,7 @@ export const ru_ru: Bundle = {
         url: 'Должен быть действительным URL',
         uuid: 'Должен быть действительным UUID',
     },
-}
+};
 
 /**
  * Danish - Denmark
@@ -455,7 +456,7 @@ export const da_dk: Bundle = {
         url: 'Skal være en gyldig URL',
         uuid: 'Skal være en gyldig UUID',
     },
-}
+};
 
 /**
  * Indonesian - Indonesia
@@ -506,7 +507,7 @@ export const id_id: Bundle = {
         url: 'Harus berupa URL valid',
         uuid: 'Harus berupa UUID valid',
     },
-}
+};
 
 /**
  * German - Germany
@@ -557,7 +558,7 @@ export const de_de: Bundle = {
         url: 'Muss eine valide URL sein',
         uuid: 'Muss eine valide UUID sein',
     },
-}
+};
 
 export interface Bundle {
     locale: string;

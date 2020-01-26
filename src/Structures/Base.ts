@@ -44,7 +44,7 @@ abstract class Base {
     private readonly _listeners!: Record<string, Listener[]>;
     private readonly _options!: Record<string, any>;
 
-    constructor(options: Options) {
+    protected constructor(options: Options) {
         autobind(this);
 
         // Define an automatic unique ID. This is primarily to distinguish

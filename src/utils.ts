@@ -33,4 +33,4 @@ export const autobind = function(instance: any): void {
             }
         }
     }
-}
+};

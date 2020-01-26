@@ -31,7 +31,6 @@ import values from 'lodash/values';
 import Base, {HttpMethods, Options, RequestOperation} from './Base';
 import Collection from './Collection';
 import ResponseError from '../Errors/ResponseError';
-import ValidationError from '../Errors/ValidationError';
 import Response from "../HTTP/Response";
 import {Rule} from "../Validation";
 import ProxyResponse from '../HTTP/ProxyResponse';
@@ -742,7 +741,7 @@ class Model extends Base {
      * Adds this model to all registered collections.
      */
     addToAllCollections(): void {
-        each(this._collections, (collection, id) => {
+        each(this._collections, (collection): void => {
             collection.add(this);
         });
     }
@@ -751,7 +750,7 @@ class Model extends Base {
      * Removes this model from all registered collections.
      */
     removeFromAllCollections(): void {
-        each(this._collections, (collection, id) => {
+        each(this._collections, (collection): void => {
             collection.remove(this);
         });
     }
@@ -1125,7 +1124,7 @@ class Model extends Base {
      * @returns {boolean|undefined} `false` if the request should not be made.
      */
     onFetch(): Promise<RequestOperation> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve): void => {
             // Don't fetch if already fetching. This prevents accidental requests
             // that sometimes occur as a result of a double-click.
             if (this.loading) {
@@ -1203,7 +1202,7 @@ class Model extends Base {
             return Promise.resolve(Base.REQUEST_SKIP);
         }
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve): void => {
             Vue.set(this, 'deleting', true);
             resolve(Base.REQUEST_CONTINUE);
         });

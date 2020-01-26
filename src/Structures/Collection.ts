@@ -33,7 +33,7 @@ import unset from 'lodash/unset';
 import values from 'lodash/values';
 
 import Base, {Options, RequestOperation} from './Base';
-import Model, {AttributesValidationErrors, ValidationResultError} from './Model';
+import Model, {ValidationResultErrorFinalResult} from './Model';
 import ResponseError from '../Errors/ResponseError';
 import ValidationError from '../Errors/ValidationError';
 import ProxyResponse from '../HTTP/ProxyResponse';
