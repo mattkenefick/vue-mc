@@ -201,7 +201,7 @@ export const messages =
 export const rule: RuleFunction = function (config: Config): Rule {
     let name: string = get(config, 'name');
     let data: Record<string, any> = get(config, 'data', {}) as Record<string, any>;
-    let test: TestFunction = get(config, 'test', stubTrue());
+    let test: TestFunction = get(config, 'test', stubTrue);
 
     /**
      * This is the function that is called when using this rule.
